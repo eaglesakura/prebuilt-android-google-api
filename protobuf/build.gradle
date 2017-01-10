@@ -1,0 +1,48 @@
+def gRPC_VERSION = "1.0.1"
+def PROTOBUF_VERSION = "3.0.0"
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "io.grpc:grpc-core:${gRPC_VERSION}"
+    compile "io.grpc:grpc-okhttp:${gRPC_VERSION}"
+    compile "io.grpc:grpc-protobuf-lite:${gRPC_VERSION}"
+    compile "io.grpc:grpc-stub:${gRPC_VERSION}"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${PROTOBUF_VERSION}"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${gRPC_VERSION}"
+        }
+        javalite {
+            artifact = "com.google.protobuf:protoc-gen-javalite:${PROTOBUF_VERSION}"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            javalite {}
+            grpc {
+                // Options added to --grpc_out
+                option 'lite'
+            }
+        }
+    }
+}
